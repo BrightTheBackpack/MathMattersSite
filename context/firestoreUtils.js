@@ -1,47 +1,9 @@
 import { collection, query, where, getDocs, setDoc, getDoc, addDoc, doc, updateDoc } from "firebase/firestore";
 import { db } from "@/context/firebase"
 
-// in context/AuthContext.jsx
-export const fetchUserDoc= async (userID) => {
-    try {
-        const userRef = doc(db, 'users', userID);
-        const userDoc = await getDoc(userRef);
-        return userDoc;
-    } catch (e) {
-        console.error("No user found in DB: " + e);
-        return false;
-    }
-}
 
-// in profile/page.js
-export const saveUserProfileDB = async (userID, profileData) => {
-    try {
-        const userRef = doc(db, 'users', userID);
-        await setDoc(userRef, {
-            ...profileData,
-            // optionally, add any server-side default here
-            updatedAt: new Date()
-        });
-        return true;
-    } catch (e) {
-        console.error("Error adding user profile: " + e);
-        return false;
-    }
-};
 
-// in actions/page.js
-export const saveAttendanceLogDB = async (logData) => {
-    try {
-        await addDoc(collection(db, 'attendance'), {
-            ...logData
-            // Add other fields as needed
-        });
-        return true;
-    } catch (e) {
-        console.error("Error adding attendance log: " + e);
-        return false;
-    }
-};
+
 
 // in components/CheckList.jsx
 export const fetchAttendanceOptions = async () => {

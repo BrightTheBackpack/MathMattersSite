@@ -40,7 +40,7 @@ export default function Login() {
         <>
             <div className="login-container">
                 <br></br>
-                <h6>Please click on the 'Sign up' buttone to create an account if you have not yet!</h6>
+                <h6>Please click on the 'Sign up' button to create an account if you have not yet!</h6>
                 <p>Login if you have an account already.</p>
                 <div className="full-line"></div>
                 <h6>{isRegister ? 'Create an account' : 'Log in'}</h6>

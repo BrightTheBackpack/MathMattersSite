@@ -24,7 +24,9 @@ export default function AuthProvider(props) {
     }
 
     function login(email, password) {
-        return signInWithEmailAndPassword(auth, email, password)
+        return signInWithEmailAndPassword(auth, email, password).onError((error) => {
+            console.error("Error during login: ", error);
+        });
     }
 
     function logout() {
@@ -48,12 +50,17 @@ export default function AuthProvider(props) {
                 setCurrentUser(user);
                 console.log(user)
                 // if we find a user, then fetch their data
-                const userDoc = await fetchUserDoc(user.uid); 
-                if (userDoc.exists()) {
+                const userDoc = await fetch("/api/user/getUserData", {
+                    method: "GET",
+                    headers: {
+                        Authorization: `Bearer ${await user.getIdToken()}`
+                    }
+                }).then(res => res.json()); 
+                if (userDoc.data) {
                     setCurrentUser({
                         uid: user.uid,
                         email: user.email,
-                        ...userDoc.data(),
+                        ...userDoc.data,
                     })
                     router.push('/actions')
                 } else {

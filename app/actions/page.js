@@ -1,7 +1,9 @@
 'use client'
 import { useAuth } from "@/context/AuthContext"
+import { auth } from "@/context/firebase"
+
 import Link from 'next/link';
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import PulldownMenu from '@/components/PulldownMenu';
 import CheckList from '@/components/CheckList';
 import { saveAttendanceLogDB } from '@/context/firestoreUtils';
@@ -9,17 +11,36 @@ import { saveAttendanceLogDB } from '@/context/firestoreUtils';
 export default function Actions() {
     const { currentUser, isLoadingUser } = useAuth()
     const { logout } = useAuth();
+    const [token, setToken] = useState("");
+
+    useEffect(() => {
+    async function fetchTokenAndData() {
+      const user = auth.currentUser;
+        if (!user) return;
+
+        // Get the ID token
+        const idToken = await user.getIdToken();
+        setToken(idToken);
+
+        // Call your API
+        }
+
+        fetchTokenAndData();
+    }, [currentUser,isLoadingUser  ]);
+
 
     if (isLoadingUser) {
         return (
             <h6 className="text-gradient">Loading...</h6>
         )
     }
+    
 
     if (!currentUser) {
         // if no user found, then boot them to the home page cause this is the action page (for auth users only)
         window.location.href = '/'
     }
+
     // ToDo: date format
     // ToDo: pulldown block size
     // save attendance log to DB    
@@ -28,21 +49,31 @@ export default function Actions() {
         console.log(date)
         const hours = document.getElementById("HoursInput").value;
         console.log(hours)
-        const studentID = document.getElementById("final-select").value;
+        let studentName = document.getElementById("item-select").value;
+        if (studentName === 'other') {
+            studentName = document.getElementById("other-input").value;
+        }
         const report = document.getElementById("ReportInput").value;
 
         const logData = {
             tutorID: currentUser.uid,
             tutorfirstName: currentUser.firstName,
             tutorlastName: currentUser.lastName,
-            Date: date,
-            Hours: hours,
-            studentID: studentID,
-            Report: report,
-            Verified: "false"
+            date: date,
+            hours: hours,
+            studentName: studentName,
+            report: report,
+            verified: "false"
         }
-        const success = await saveAttendanceLogDB(logData);
-        if (success) {
+        const res = await fetch("/api/attendance/attendanceLog", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify(logData)
+        });
+        if (res.ok) {
             alert("Attendance log saved successfully!");
             window.location.reload();
         } else {
@@ -51,7 +82,6 @@ export default function Actions() {
 
     }
 
-    /* example of conditional rendering */
     const SharedAttendanceForm = () => (
         <div>
             <h2>Update attendance log</h2>
@@ -61,14 +91,12 @@ export default function Actions() {
                 placeholder="YYYY-MM-DD"
                 title="Format: YYYY-MM-DD" />
             <label htmlFor="HoursInput">Hours:</label>
-            <input type="number" id="HoursInput" placeholder="Total hours" />
+            <input type="number" id="HoursInput" placeholder="Total hours" defaultValue="2" />
             <PulldownMenu />
             <label htmlFor="ReportInput">Progress report:</label>
             <input type="text" id="ReportInput" placeholder="Type your report here" />
 
             <button className='px-4 py-2 bg-red-600 text-white rounded-md' onClick={saveAttendanceLog}>Save Attendance Log</button>
-            <h2>Check hours</h2>
-            // Todo: add database query of volunteer hours
         </div>
     );
 
@@ -111,14 +139,10 @@ export default function Actions() {
                 </div>
             }
 
-            <p>{currentUser.firstName} {currentUser.lastName} has logged in as a {currentUser.userType}.</p>
+            {/* <p>{currentUser.firstName} {currentUser.lastName} has logged in as a {currentUser.userType}.</p> */}
 
             {renderContent()}
             <br></br>
-            <p>To update your user profile, please go to</p>
-            <div className='link'>
-                <Link href="/profile">Setup User Profile</Link>
-            </div>
         </div>
     );
 }

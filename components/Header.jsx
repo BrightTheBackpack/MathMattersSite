@@ -1,8 +1,8 @@
 export default function Header() {
     return (
         <header className="header">
-            <h1>Welecom to MathMatters</h1>
-            <h2 className="text-gradient">Attendance Log and Progress Tracking</h2>
+            <h1>Welcome to Math Matters</h1>
+            {/* <h2 className="text-gradient">Attendance Log and Progress Tracking</h2> */}
             {/*<nav>
           <ul>
               <li><a href="#">Home</a></li>

@@ -21,7 +21,7 @@ const CheckList = () => {
             }
         };
         getData();
-    }, []);
+    }, [users]);
 
     const handleCheckboxChange = (userId) => {
         setCheckedUsers(prevCheckedUsers => ({
@@ -61,17 +61,21 @@ const CheckList = () => {
             <label htmlFor="log-select">Click on the log to verify:</label>
             <ul>
                 {users.map(user => (
-                    <li key={user.id}>
-                        <input
-                            type="checkbox"
-                            checked={!!checkedUsers[user.id]}
-                            onChange={() => handleCheckboxChange(user.id)}
-                        />
-                        {user.Date} {user.tutorfirstName} {user.tutorlastName} ({user.Hours})
-                    </li>
+                    <ul key={user.id}>
+                        <button>
+                            Verify
+                        </button>
+                        <button>
+                            Deny
+                        </button>
+                 
+                        <div>
+                            {user.Date} {user.tutorfirstName} {user.tutorlastName} ({user.Hours+" hours"})
+                            <input type="number" placeholder="hours" defaultValue={user.Hours} />
+                        </div>
+                    </ul>
                 ))}
             </ul>
-            <button onClick={handleSubmit}>Verify Selected Log</button>
         </div>
     );
 };

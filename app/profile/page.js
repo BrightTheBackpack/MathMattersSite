@@ -1,13 +1,27 @@
 'use client'
 import { useAuth } from "@/context/AuthContext"
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { saveUserProfileDB } from '@/context/firestoreUtils';
-
+import { auth } from "@/context/firebase"
 export default function Profile() {
     const { currentUser, isLoadingUser } = useAuth()
     const { logout } = useAuth();
     const [userType, setUserType] = useState("Guest");
     const [userSchool, setUserSchool] = useState("NA");
+    const [token, setToken] = useState("");
+    useEffect(() => {
+    async function fetchToken() {
+      const user = auth.currentUser;
+        if (!user) return;
+
+        // Get the ID token
+        const idToken = await user.getIdToken();
+        setToken(idToken);
+
+        }
+
+        fetchToken();
+    }, [currentUser,isLoadingUser  ]);
 
     if (isLoadingUser) {
         return (
@@ -41,9 +55,17 @@ export default function Profile() {
             school: school,
             userType: userType
         }
+        const response = await fetch("/api/user/saveProfile", {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify(profileData)
+        });
 
-        const success = await saveUserProfileDB(currentUser.uid, profileData);
-        if (success) {
+        // const success = await saveUserProfileDB(currentUser.uid, profileData);
+        if (response.status === 200) {
             alert("Profile saved successfully, switch to page of actions")
             window.location.href = '/actions'
         } else {
@@ -54,11 +76,11 @@ export default function Profile() {
 
     return (
         <div className="profile">
-            {currentUser &&
+            {/* {currentUser &&
                 <div className='logoutButton'>
                     <button onClick={logout}>Logout</button>
                 </div>
-            }
+            } */}
 
             <h1>Please set up your user profile</h1>
             <label id="userType">Set the User Type</label>

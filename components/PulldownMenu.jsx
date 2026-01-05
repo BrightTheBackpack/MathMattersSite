@@ -70,11 +70,11 @@ const PulldownMenu = () => {
                 <option value="other">Other</option>
             </select>
             {selectedValue === 'other' && (
-                <input type="text" value={otherValue}
+                <input type="text" id="other-input" value={otherValue}
                     onChange={(e) => setOtherValue(e.target.value)}
-                    placeholder="Tpye in student name" />
+                    placeholder="Type in student name" />
             )}
-            <button id="final-select" value={finalValue} onClick={setStudentName}>Set Student Name</button>
+            {/* <button id="final-select" value={finalValue} onClick={setStudentName}>Set Student Name</button> */}
         </div>
     );
 };
