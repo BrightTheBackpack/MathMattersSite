@@ -52,6 +52,14 @@ export default function Actions() {
         let studentName = document.getElementById("item-select").value;
         if (studentName === 'other') {
             studentName = document.getElementById("other-input").value;
+            fetch("/api/attendance/students", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({ studentName })
+            });
         }
         const report = document.getElementById("ReportInput").value;
 

@@ -23,6 +23,7 @@ export async function GET(req) {
 }
 
 export async function POST(req) {
+  //todo: add more logic to be able to link student later
   const token = req.headers.get("authorization")?.split("Bearer ")[1];
   let decoded;
     try{

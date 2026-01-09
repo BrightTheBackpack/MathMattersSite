@@ -44,25 +44,7 @@ export const updateAttendanceLogs = async (userID) => {
     }
 }
 
-// in components/PulldownMenu.jsx
-export const fetchStudentDropdownOptions = async () => {
-    const itemsRef = collection(db, "student");
-    //const q = query(itemsRef, where("userType", "==", "Student"));
-    const q = query(itemsRef);
-    const querySnapshot = await getDocs(q);
-    const options = [];
-    querySnapshot.forEach((doc) => {
-        // Assuming each document has 'value' and 'label' fields
-        options.push({
-            id: doc.id,
-            studentName: doc.data().studentName
-            //firstName: doc.data().firstName,
-            //lastName: doc.data().lastName
-        });
-    });
-    console.log(options)
-    return options;
-};
+
 
 // in components/PulldownMenu.jsx
 export const addStudentLogDB = async (logData) => {

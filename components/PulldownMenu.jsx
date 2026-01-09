@@ -3,19 +3,34 @@
 import React, { useState, useEffect } from 'react';
 import { fetchStudentDropdownOptions } from '@/context/firestoreUtils';
 import { addStudentLogDB } from '@/context/firestoreUtils';
-
+import { auth } from "@/context/firebase"
 const PulldownMenu = () => {
     const [options, setOptions] = useState([]);
     const [selectedValue, setSelectedValue] = useState('');
     const [otherValue, setOtherValue] = useState('');
     const [finalValue, setFinalValue] = useState('');
     const [loading, setLoading] = useState(true);
+    const [token, setToken] = useState("");
 
     useEffect(() => {
         const getData = async () => {
+                  const user = auth.currentUser;
+                    if (!user) return;
+            
+                    // Get the ID token
+                    const idToken = await user.getIdToken();
+                    setToken(idToken);
+            
             try {
-                const data = await fetchStudentDropdownOptions();
-                setOptions(data);
+                const data = await fetch("api/attendance/students",{
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${idToken}`,
+                        'Content-Type': 'application/json',
+                    },
+                }).then(res => res.json());
+                console.log("data:", data);
+                setOptions(data.students);
                 console.log(data);
                 setLoading(false);
             } catch (error) {
